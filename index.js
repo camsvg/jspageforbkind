@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Library & Leaderboard</title>
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --accent: #f1f5f9;
+            --border: #e2e8f0;
+            --success: #16a34a;
+            --gold: #eab308;
+            --silver: #94a3b8;
+            --bronze: #b45309;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .admin-btn {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .admin-btn:hover {
+            background-color: var(--accent);
+            color: var(--text-main);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .tab-link {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+
+        .tab-link.active {
+            background-color: var(--primary);
+            color: #white;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .category-section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .category-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.25rem;
+        }
+
+        .book-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--accent);
+        }
+
+        .book-item:last-child {
+            border-bottom: none;
+        }
+
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            text-decoration: none;
+            cursor: pointer;
+            display: inline-block;
+            transition: color 0.2s;
+        }
+
+        .book-title:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        .book-author {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .leaderboard-list {
+            list-style: none;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid var(--accent);
+            font-weight: 500;
+        }
+
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+
+        .rank {
+            font-weight: 700;
+            width: 2.5rem;
+        }
+
+        .rank-1 { color: var(--gold); }
+        .rank-2 { color: var(--silver); }
+        .rank-3 { color: var(--bronze); }
+
+        .qa-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .qa-question {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .qa-answer {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            white-space: pre-line;
+        }
+
+        .delivery-instructions {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-danger {
+            background-color: #dc2626;
+        }
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .admin-table th, .admin-table td {
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        .admin-table th {
+            background-color: var(--accent);
+            font-weight: 600;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Book Directory System</h1>
+            <button class="admin-btn" id="adminAuthBtn" onclick="toggleAdminPanel()">Admin Access</button>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="tab-link active" onclick="switchTab('main-tab')">Catalog & Stats</button>
+            <button class="tab-link" onclick="switchTab('qa-tab')">Printing & Download Guide</button>
+            <button class="tab-link" onclick="switchTab('donate-tab')">Why Donate</button>
+            <button class="tab-link" id="adminTabLink" style="display: none;" onclick="switchTab('admin-tab')">Admin Console</button>
+        </div>
+
+        <!-- MAIN TAB -->
+        <div id="main-tab" class="tab-content active">
+            <div class="grid-layout">
+                <div id="bookListContainer">
+                    <!-- Dynamic Categorized Books Inserted Here -->
+                </div>
+                <div>
+                    <div class="card">
+                        <div class="card-title">🏆 Top Contributors</div>
+                        <ul class="leaderboard-list" id="leaderboardContainer">
+                            <!-- Top 3 Entries Inserted Here -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q&A TAB -->
+        <div id="qa-tab" class="tab-content">
+            <div class="card">
+                <div class="delivery-instructions">
+                    📍 <strong>Default Setup Command:</strong> deliver to Room Cameron's Room Unit 361 printing instructions everything default.
+                </div>
+                
+                <div class="qa-item">
+                    <div class="qa-question">💡 How to download PDFs from a GitHub blob link?</div>
+                    <div class="qa-answer">When navigating directly to a PDF document inside a GitHub repository interface, standard save procedures change. Click the link provided. Once GitHub's frame loads, locate the clear "Download raw file" layout action button on the upper-right control field of the repository terminal content viewer page to stream the raw document layer straight to disk storage.</div>
+                </div>
+
+                <div class="qa-item">
+                    <div class="qa-question">📱 How to print PDFs on Apple iOS devices?</div>
